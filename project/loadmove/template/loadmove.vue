@@ -8,119 +8,18 @@
         >
         <div class="loadmove-top-box relative" ref='loadTop'>
             <div class="loadmove-top-content flex absolute" ref='loadHeight'>
-                <span class="icon iconfont">&#xe62d;</span>
-                <span>下拉可以刷新</span>
+                <img src="https://pic.bianla.cn/bianlaAPI/common/img/ajax-loader.gif" v-show='offRefreshLoading' class='ajax-loader' alt="">
+                <span class="icon iconfont" :class="{animate:arrowAnimate}" v-show="!offRefreshLoading">&#xe62d;</span>
+                <span v-text='refreshTipsText'></span>
                 <!-- <span>正在刷新数据</span>
                 <span>松开可以刷新</span> -->
             </div>
         </div>
         <slot></slot>
-        <ul>
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-            <li>4</li>
-            <li>5</li>
-            <li>6</li>
-            <li>7</li>
-            <li>8</li>
-            <li>9</li>
-            <li>10</li>
-            <li>11</li>
-            <li>12</li>
-            <li>13</li>
-            <li>14</li>
-            <li>15</li>
-            <li>16</li>
-            <li>17</li>
-            <li>18</li>
-            <li>19</li>
-            <li>20</li>
-            <li>21</li>
-            <li>22</li>
-            <li>23</li>
-            <li>24</li>
-            <li>25</li>
-            <li>26</li>
-            <li>27</li>
-            <li>28</li>
-            <li>29</li>
-            <li>30</li>
-            <li>31</li>
-            <li>32</li>
-            <li>33</li>
-            <li>34</li>
-            <li>35</li>
-            <li>36</li>
-            <li>37</li>
-            <li>38</li>
-            <li>39</li>
-            <li>40</li>
-            <li>41</li>
-            <li>42</li>
-            <li>43</li>
-            <li>44</li>
-            <li>45</li>
-            <li>46</li>
-            <li>47</li>
-            <li>48</li>
-            <li>49</li>
-            <li>50</li>
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-            <li>4</li>
-            <li>5</li>
-            <li>6</li>
-            <li>7</li>
-            <li>8</li>
-            <li>9</li>
-            <li>10</li>
-            <li>11</li>
-            <li>12</li>
-            <li>13</li>
-            <li>14</li>
-            <li>15</li>
-            <li>16</li>
-            <li>17</li>
-            <li>18</li>
-            <li>19</li>
-            <li>20</li>
-            <li>21</li>
-            <li>22</li>
-            <li>23</li>
-            <li>24</li>
-            <li>25</li>
-            <li>26</li>
-            <li>27</li>
-            <li>28</li>
-            <li>29</li>
-            <li>30</li>
-            <li>31</li>
-            <li>32</li>
-            <li>33</li>
-            <li>34</li>
-            <li>35</li>
-            <li>36</li>
-            <li>37</li>
-            <li>38</li>
-            <li>39</li>
-            <li>40</li>
-            <li>41</li>
-            <li>42</li>
-            <li>43</li>
-            <li>44</li>
-            <li>45</li>
-            <li>46</li>
-            <li>47</li>
-            <li>48</li>
-            <li>49</li>
-            <li>50</li>
-        </ul>
         <div class="loademove-footer-box">
             <div class="flex">
-                <img src="https://pic.bianla.cn/bianlaAPI/common/img/ajax-loader.gif" class='ajax-loader' alt="">
-                <span>正在加载</span>
+                <img src="https://pic.bianla.cn/bianlaAPI/common/img/ajax-loader.gif" v-show='offLoadMoveIcon' class='ajax-loader' alt="">
+                <span v-text='loadTipsText'></span>
                 <!-- <span>没有更多了</span> -->
             </div>
         </div>
@@ -135,7 +34,13 @@ export default {
             startScrollTop:0,
             triggerLine:60,
             scroHeight:0,
-            loadBottomLoading:true
+            loadBottomLoading:true,
+            refreshTipsText:"下拉可以刷新",
+            loadTipsText:"正在加载",
+            arrowAnimate:false,
+            offRefreshLoading:false,
+            offLoadMoveIcon:true
+
         }
     },
     methods:{
@@ -143,7 +48,13 @@ export default {
             if(!this.loadBottomLoading){return}
             if(this.$refs.move.scrollHeight-this.$refs.move.scrollTop-this.$refs.move.offsetHeight<150){
                 this.loadBottomLoading = false;
-                this.$emit("loadBottom",()=>{
+                this.$emit("loadBottom",(statu)=>{
+                    if(statu){
+                        this.loadTipsText = '没有更多了';
+                        this.offLoadMoveIcon = false;
+                        this.loadBottomLoading = false;
+                        return;
+                    }
                     this.loadBottomLoading = true;
                 })
             }
@@ -162,6 +73,10 @@ export default {
                 var number = touchY-this.startScrollTop;
                 this.scroHeight = number/3;
                 this.$refs.loadTop.style.cssText = `height:${number/3}px`;
+                if(this.scroHeight>=this.triggerLine){
+                    this.refreshTipsText='松开可以刷新';
+                    this.arrowAnimate = true;
+                }
             }
         },
         touchend(ev){
@@ -171,11 +86,20 @@ export default {
             this.$refs.loadTop.classList.add("animate");
             if(this.scroHeight>=this.triggerLine){
                 this.$refs.loadTop.style.height = this.$refs.loadHeight.offsetHeight+"px";
+                this.refreshTipsText='正在刷新数据';
+                this.offRefreshLoading = true;
+                
                 this.$emit("loadTop",()=>{
                     this.$refs.loadTop.style.height = 0;
+                    this.loadTipsText = '正在加载';
+                    this.offLoadMoveIcon = true;
+                    this.loadBottomLoading = true;
                     setTimeout(()=>{
                         this.$refs.loadTop.classList.remove("animate");
+                        this.refreshTipsText='下拉可以刷新';
                         this.isTouch = true;
+                        this.offRefreshLoading = false;
+                        this.arrowAnimate = false;
                     },300);
                 })
             }else{
@@ -212,6 +136,13 @@ export default {
             height:100px;
             width:100%;
             bottom:0;
+            span.icon.iconfont{
+                transform: rotate(180deg)
+            }
+            span.icon.animate{
+                transition: all 0.3s;
+                transform: rotate(0deg);
+            }
         }
     }
     ul{
