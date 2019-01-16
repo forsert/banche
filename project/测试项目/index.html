@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <ul>
+            <li id='title' s-text='title'></li>
+            <li s-text='content'></li>
+        </ul>
+    </div>
+    <script>
+        var data = {
+            title:"标题",
+            content:"内容"
+        }
+        function Seer(data,callback){
+            for(let key in data){
+                if(data.hasOwnProperty(key)){
+                    mark(data,key)
+                }
+            }
+            function mark(obj,key){
+                var val = obj[key]
+                Object.defineProperty(obj,key,{
+                    get(){
+                        return val
+                    },
+                    set (newVal){
+                        val = newVal;
+                        callback(obj,key)
+                    }
+                })
+            };
+            
+        }
+        Seer(data,function(obj,key){
+            var title = document.querySelector("#title")
+            var s_text = title.textContent;
+            title.textContent = obj[key]
+        })
+    </script>
+</body>
+</html>

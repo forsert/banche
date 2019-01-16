@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:port": "webpack --env=production",
     "build:test": "webpack --env=development",
+    "product": "webpack --progress= ",
     "watch": "webpack --watch",
     "start": "webpack-dev-server --open",
     "http": "http-server dist"

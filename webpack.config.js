@@ -3,13 +3,11 @@ var glob = require('glob')
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-var ManifestPlugin = require('webpack-manifest-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 var Autoprefixer = require('autoprefixer')
 const globConfig = require('./build/globConfig')
 var pathConfig = require('./build/path.config')
-const uglify = require('uglifyjs-webpack-plugin');
 const entry = globConfig.entryConfig();
 const ip = require('./build/getIp')
 const  NODE_ENV = process.argv[2].replace('--env=','');
@@ -35,7 +33,6 @@ module.exports = devWebpackConfig = {
             },
             except: ['$super', '$', 'exports', 'require']    //混淆,并排除关键字
         }),
-        // new ManifestPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             names: ['vendor', 'manifest']
         }),
@@ -54,9 +51,7 @@ module.exports = devWebpackConfig = {
                 use:{
                     loader:"babel-loader",
                     options:{
-                        presets:[
-                            "env"
-                        ]
+                        presets:["env"]
                     }
                 },
                 exclude:path.resolve(__dirname,"node_modules"),
@@ -66,7 +61,6 @@ module.exports = devWebpackConfig = {
                     fallback:"style-loader",
                     use:['css-loader','postcss-loader']
                 })
-                // loader: "style-loader!css-loader!postcss-loader",
             },{
                 test:/\.(jpg|png|git)$/,
                 use:{
@@ -80,10 +74,9 @@ module.exports = devWebpackConfig = {
                 }
             },{
                 test:/\.less$/,
-                // use: ['style-loader', 'css-loader','postcss-loader', 'less-loader']
                 use:ExtractTextPlugin.extract({
                     fallback:"style-loader",
-                    use:['css-loader','less-loader']
+                    use:['css-loader',"postcss-loader",'less-loader']
                 })
             }
         ]

@@ -5,7 +5,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 exports.entryConfig =function(){
     var obj = {};
     glob.sync(`${pathConfig.modulePath}/*/*.js`).forEach((name)=>{
-        
         // 入口文件名称
         var basename = path.basename(name, path.extname(name));
         //路径切割

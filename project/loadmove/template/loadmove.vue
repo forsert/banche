@@ -65,13 +65,13 @@ export default {
             this.startScrollTop = this.$refs.move.scrollTop;
         },
         touchmove(ev){
-            if(!this.isTouch){ ev.preventDefault();return}
-            // this.touchY = ev.touches[0].clientY;
+            if(!this.isTouch){ev.preventDefault(); return}
             var touchY = ev.touches[0].clientY - this.touchY;
             if(this.$refs.move.scrollTop<=0 && ev.touches[0].clientY-this.touchY>0){
                 ev.preventDefault();
                 var number = touchY-this.startScrollTop;
                 this.scroHeight = number/3;
+                console.log(this.scroHeight)
                 this.$refs.loadTop.style.cssText = `height:${number/3}px`;
                 if(this.scroHeight>=this.triggerLine){
                     this.refreshTipsText='松开可以刷新';
@@ -82,9 +82,10 @@ export default {
         touchend(ev){
             var _self = this;
             if(!this.isTouch){return};
-            this.isTouch = false;
             this.$refs.loadTop.classList.add("animate");
             if(this.scroHeight>=this.triggerLine){
+                this.isTouch = false;
+                this.scroHeight = 0;
                 this.$refs.loadTop.style.height = this.$refs.loadHeight.offsetHeight+"px";
                 this.refreshTipsText='正在刷新数据';
                 this.offRefreshLoading = true;
@@ -111,6 +112,10 @@ export default {
             };
             
         }
+    },
+    mounted(){
+        var _selfel = this.$refs.move;
+        _selfel.style.height = window.innerHeight - _selfel.offsetTop+'px'
     }
 }
 </script>
